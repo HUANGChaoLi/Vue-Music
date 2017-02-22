@@ -13,7 +13,9 @@
       md-bottom-bar-item(:md-icon="play ? 'pause' : 'play_arrow'", @click.native="playOrPause") {{play ? '暂停' : '播放'}}
       md-bottom-bar-item(md-icon="last_page", @click.native="playNextSong") 下一首
       md-bottom-bar-item.like-icon(:md-icon="playingSong.like ? 'favorite' : 'favorite_border'", @click.native="markFavorite") 喜欢
-      md-bottom-bar-item(md-icon="volume_up") {{songTime | timeFilter}}
+      md-bottom-bar-item(@click.native="showVolumePicker($event)", :md-icon="volume ? 'volume_up' : 'volume_off'") 音量
+        transition(name="bounce", mode="out-in")
+          volumePicker#volume-picker(v-if="showPicker", :changeVolume="changeVolume", :currentVolume="volume")
     .play-process-container
       .play-process(:style="{width: processRatio + '%'}")
     md-dialog-alert(md-content="网络错误，请检查网络设置", :md-ok-text="'ok'", ref="alert404")
@@ -32,9 +34,9 @@
 
 <script>
 import Vue from 'Vue'
-import router from '../router/index.js'
 import sideList from './sideList'
-import timeFilter from '../filters/Time.js'
+import volumePicker from './volumePicker'
+import router from '../router/index.js'
 import Resource from '../services/resource.js'
 import storage from '../services/storage.js'
 import util from '../services/util.js'
@@ -52,7 +54,9 @@ export default {
       currentTime: 0,
       timer: null,
       playingSong: {},
-      alertContent: ''
+      alertContent: '',
+      showPicker: false,
+      volume: 1
     }
   },
   mounted () {
@@ -81,6 +85,13 @@ export default {
     }
   },
   methods: {
+    showVolumePicker () {
+      this.showPicker = !this.showPicker
+    },
+    changeVolume (val) {
+      this.volume = val
+      this.$refs.player.volume = this.volume
+    },
     playReset () {
       this.play = false
       this.currentTime = 0
@@ -174,10 +185,8 @@ export default {
     }
   },
   components: {
-    sideList
-  },
-  filters: {
-    timeFilter
+    sideList,
+    volumePicker
   },
   computed: {
     processRatio () {
@@ -188,6 +197,11 @@ export default {
 </script>
 
 <style scoped>
+#volume-picker {
+  position: absolute;
+  left: -10px;
+  bottom: 60px;
+}
 .nav-bar {
   position: fixed;
   top: 0px;

@@ -66,7 +66,7 @@ ul li.active {
   height: 50px;
 }
 .song-filename {
-  width: 180px;
+  width: 170px;
   text-align: left;
   font-weight: bold;
   font-size: 15px;
@@ -75,7 +75,7 @@ ul li.active {
 .song-albumname {
   display: inline-block;
   text-align: left;
-  width: 180px;
+  width: 170px;
 }
 .song-filename, .song-albumname {
   white-space: nowrap;
