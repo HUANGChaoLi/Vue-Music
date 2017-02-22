@@ -28,6 +28,9 @@ export default {
       window.eventManager.$on('PlayList.changeLike', function () {
         util.updateAttrFromTo(Vue, storage.getFavoriteSongs(), self.songs, 'like', false)
       })
+      window.eventManager.$on('PlayList.playSongADD', function (newSong) {
+        self.songs = util.updateAttrFromTo(Vue, storage.getFavoriteSongs(), storage.getPlaySongs(), 'like', false)
+      })
     }
   },
   methods: {

@@ -9,14 +9,16 @@
       router-view.content
     audio#player(ref="player", :src="playingSong.src")
     md-bottom-bar.music-control-container
-      md-bottom-bar-item(md-icon="first_page", @click.native="show") 上一首
+      md-bottom-bar-item(md-icon="first_page", @click.native="playPrevSong") 上一首
       md-bottom-bar-item(:md-icon="play ? 'pause' : 'play_arrow'", @click.native="playOrPause") {{play ? '暂停' : '播放'}}
-      md-bottom-bar-item(md-icon="last_page") 下一首
+      md-bottom-bar-item(md-icon="last_page", @click.native="playNextSong") 下一首
       md-bottom-bar-item(md-icon="favorite_border") 喜欢
       md-bottom-bar-item(md-icon="volume_up") {{songTime | timeFilter}}
     .play-process-container
       .play-process(:style="{width: processRatio + '%'}")
-    md-dialog-alert(:md-content="'查询失败，请检查网络状况'", :md-ok-text="'ok'", ref="alert")
+    md-dialog-alert(md-content="网络错误，请检查网络设置", :md-ok-text="'ok'", ref="alert404")
+    md-dialog-alert(md-content="尚无可播放曲目", :md-ok-text="'ok'", ref="alertPlay")
+    md-dialog-alert(md-content="未知错误", :md-ok-text="'ok'", ref="alertUnknow")
     md-sidenav.md-left(ref="searchSidenav")
       md-toolbar.search-bar
         md-button.md-icon-button(@click.native="search")
@@ -36,6 +38,7 @@ import timeFilter from '../filters/Time.js'
 import Resource from '../services/resource.js'
 import storage from '../services/storage.js'
 import util from '../services/util.js'
+import playQueueManager from '../services/PlayQueueManager.js'
 
 export default {
   name: 'Main',
@@ -48,7 +51,8 @@ export default {
       play: false,
       currentTime: 0,
       timer: null,
-      playingSong: {}
+      playingSong: {},
+      alertContent: ''
     }
   },
   mounted () {
@@ -60,6 +64,7 @@ export default {
       // 全局播放接口
       window.eventManager.$on('Global.playSong', function (newSong) {
         if (self.play && newSong.hash === self.playingSong.hash) return
+        window.eventManager.$emit('PlayList.playSongADD', newSong)
         if (self.play) self.playOrPause()
         Resource.searchUrlByHash(self.$http, newSong.hash, function (err, url) {
           if (err) {
@@ -94,7 +99,7 @@ export default {
       self.searchNow = true
       Resource.searchByKeyword(this.$http, this.keyword, function (err, data) {
         self.searchNow = false
-        if (err) self.$refs.alert.open()
+        if (err) self.$refs.alert404.open()
         else self.songs = data
         util.updateAttrFromTo(Vue, storage.getFavoriteSongs(), self.songs, 'like', false)
       })
@@ -115,6 +120,7 @@ export default {
       if (window) window.eventManager.$emit('Global.playSong', this.songs[index])
     },
     playOrPause () {
+      if (!this.playingSong.hash) return this.$refs.alertPlay.open()
       this.songTime = this.$refs.player.duration
       if (!this.songTime) this.songTime = 1
       let player = this.$refs.player
@@ -136,17 +142,22 @@ export default {
         player.pause()
       }
     },
-    show () {
-      let self = this
-      Resource.searchUrlByHash(this.$http, '7e66e95f4583c6fc21eb92a79b428990', function (err, url) {
-        if (err) {
-          self.$refs.alert.open()
-        } else {
-          self.$refs.player.src = url
-          self.playReset()
-          setTimeout(self.playOrPause, 200)
-        }
-      })
+    __playThisSong (thisSong) {
+      if (!thisSong) {
+        this.$refs.alertPlay.open()
+      } else if (window) {
+        window.eventManager.$emit('Global.playSong', thisSong)
+      } else {
+        this.$refs.alertUnknow.open()
+      }
+    },
+    playPrevSong () {
+      let song = playQueueManager.getPrevSong(this.playingSong.hash)
+      this.__playThisSong(song)
+    },
+    playNextSong () {
+      let song = playQueueManager.getNextSong(this.playingSong.hash)
+      this.__playThisSong(song)
     }
   },
   components: {
