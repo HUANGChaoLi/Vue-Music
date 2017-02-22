@@ -1,46 +1,49 @@
 <template lang="jade">
-  ul
-    li(v-for="(item, index) in items", v-on:click="active(index)", v-bind:class="{ active: index == activeIndex }")
-      md-layout(md-gutter)
-        md-layout(md-flex="20")
-          img.song-img(:src="item.headpic")
-        md-layout
-          .song-filename {{item.filename}}
-          .song-albumname {{item.album_name}}
-          .song-time {{item.time | timeFilter}}
-          .song-ctrl
-            md-icon.ctrl-icon play_circle_outline
-            md-icon.ctrl-icon favorite_border
+  .songList
+    ul
+      md-whiteframe(md-elevation="0", v-for="(item, index) in items")
+        md-ink-ripple
+        li(v-on:click="active(index)", v-bind:class="{ active: index == activeIndex }")
+          .list-container
+            .img-container(@click='changePlay(index)')
+              img.song-img(:src="item.headpic")
+            .song-ctrl
+              md-icon.ctrl-icon(@click.native='changePlay(index)') play_circle_outline
+              md-icon.ctrl-icon(@click.native='changeLike(index)', :class='{like: item.like}') {{item.like ? 'favorite' : 'favorite_border'}}
+              md-icon.ctrl-icon(v-if="hasDelete") delete
+            .other-container(@click='changePlay(index)')
+              .song-filename {{item.filename}}
+              .song-albumname {{item.album_name}}
 </template>
 
 <script>
 
-import timeFilter from '../filters/Time.js'
-
 export default {
-  name: 'sideList',
-  props: ['items'],
+  name: 'songList',
+  props: ['items', 'changeLike', 'changePlay', 'delete', 'hasDelete'],
   data: function () {
     return {
-      activeIndex: 0
+      activeIndex: -1
     }
   },
   methods: {
     active (index) {
       this.activeIndex = index
     }
-  },
-  filters: {
-    timeFilter
   }
 }
 </script>
 
 <style scoped>
-
+.songList {
+  padding-top: 1px;
+}
 ul {
   padding: 0px;
   margin: 0px !important;
+}
+ul .md-whiteframe {
+  border-bottom: 1px solid rgba(63, 81, 181, .1);
 }
 ul li {
   list-style: none;
@@ -58,47 +61,63 @@ ul li.active {
   border-left: 2px solid red;
 }
 
+.list-container {
+  position: relative;
+  min-height: 50px;
+}
+
+.img-container {
+  width: 50px;
+  float: left;
+}
+.other-container {
+  margin-left: 55px;
+  margin-right: 100px;
+  height: 100%;
+}
+
 .song-img {
   display: block;
   width: 50px;
   height: 50px;
 }
 .song-filename {
-  width: 180px;
   text-align: left;
   font-weight: bold;
   font-size: 15px;
   color: rgba(63, 81, 181, .8);
 }
 .song-albumname {
-  display: inline-block;
   text-align: left;
-  width: 180px;
 }
 .song-filename, .song-albumname {
+  margin-bottom: 5px;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
-.song-time {
-  width: 50px;
-  overflow: hidden;
-  text-align: right;
-}
-ul li:hover .song-time, .song-ctrl {
-  display: none;
-}
+
+.song-ctrl {
+  /*position: absolute;*/
+  display: inline-block;
+  float: right;
+  height: 100%;
+  padding: 14px 0px;
+  width: 100px;
+/*  right: 5px;
+  top: 14px;
+*/}
 .song-ctrl .ctrl-icon {
   color: rgba(0, 0, 0, .4);
+  display: inline-block;
+  margin-right: 4px;
+}
+.song-ctrl .like {
+  color: #e91e63 !important;
 }
 .song-ctrl .ctrl-icon:hover {
   color: rgba(63, 81, 181, .8);
 }
-ul li:hover .song-ctrl {
-  position: absolute;
-  display: block;
-  right: 5px;
-  top: 15px;
-}
+
 
 </style>

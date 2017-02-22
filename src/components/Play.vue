@@ -59,16 +59,4 @@ export default {
   font-size: 1.5em;
   color: rgba(1, 1, 1, .5);
 }
-
-@keyframes rotating {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-.rotating {
-  animation: rotating 4s linear infinite;
-}
 </style>

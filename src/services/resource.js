@@ -1,6 +1,7 @@
+
 class Resource {
   searchByKeyword (http, keyword, callback) {
-    http.jsonp('http://api.dagoogle.cn/music/search?keyword=' + keyword)
+    http.jsonp(`http://api.dagoogle.cn/music/search?keyword=${keyword}`)
     .then(function (res) {
       callback(null, res.body.data)
     }, function () {
@@ -8,7 +9,7 @@ class Resource {
     })
   }
   searchUrlByHash (http, hash, callback) {
-    http.jsonp('http://m.kugou.com/app/i/getSongInfo.php?hash=' + hash + '&cmd=playInfo&format=jsonp')
+    http.jsonp(`http://m.kugou.com/app/i/getSongInfo.php?hash=${hash}&cmd=playInfo&format=jsonp`)
     .then(function (res) {
       callback(null, res.body.url)
     }, function () {
@@ -17,4 +18,6 @@ class Resource {
   }
 }
 
-export default new Resource()
+let exportInstance = new Resource()
+
+export default exportInstance
