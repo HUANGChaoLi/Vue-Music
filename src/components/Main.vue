@@ -12,7 +12,7 @@
       md-bottom-bar-item(md-icon="first_page", @click.native="playPrevSong") 上一首
       md-bottom-bar-item(:md-icon="play ? 'pause' : 'play_arrow'", @click.native="playOrPause") {{play ? '暂停' : '播放'}}
       md-bottom-bar-item(md-icon="last_page", @click.native="playNextSong") 下一首
-      md-bottom-bar-item(md-icon="favorite_border") 喜欢
+      md-bottom-bar-item.like-icon(:md-icon="playingSong.like ? 'favorite' : 'favorite_border'", @click.native="markFavorite") 喜欢
       md-bottom-bar-item(md-icon="volume_up") {{songTime | timeFilter}}
     .play-process-container
       .play-process(:style="{width: processRatio + '%'}")
@@ -44,7 +44,7 @@ export default {
   name: 'Main',
   data () {
     return {
-      songs: [],
+      songs: [], // 搜索结果歌曲
       keyword: '',
       searchNow: false,
       songTime: 0,
@@ -64,6 +64,7 @@ export default {
       // 全局播放接口
       window.eventManager.$on('Global.playSong', function (newSong) {
         if (self.play && newSong.hash === self.playingSong.hash) return
+        util.setAttrToItem(Vue, storage.getFavoriteSongs(), newSong, 'like')
         window.eventManager.$emit('PlayList.playSongADD', newSong)
         if (self.play) self.playOrPause()
         Resource.searchUrlByHash(self.$http, newSong.hash, function (err, url) {
@@ -104,6 +105,17 @@ export default {
         util.updateAttrFromTo(Vue, storage.getFavoriteSongs(), self.songs, 'like', false)
       })
     },
+    markFavorite () {
+      if (!this.playingSong.hash) return this.$refs.alertPlay.open()
+      this.playingSong.like = !this.playingSong.like
+      if (this.playingSong.like) storage.addFavoriteSong(this.playingSong)
+      else storage.removeFavoriteSong(this.playingSong)
+      if (window) {
+        window.eventManager.$emit('Favorite.changeLike')
+        window.eventManager.$emit('PlayList.changeLike')
+        window.eventManager.$emit('Search.changeLike', this.playingSong)
+      }
+    },
     updateLike (index) {
       if (typeof this.songs[index] !== 'object') return
       this.songs[index].like = !this.songs[index].like
@@ -120,7 +132,7 @@ export default {
       if (window) window.eventManager.$emit('Global.playSong', this.songs[index])
     },
     playOrPause () {
-      if (!this.playingSong.hash) return this.$refs.alertPlay.open()
+      if (!this.playingSong.hash) return this.playNextSong()
       this.songTime = this.$refs.player.duration
       if (!this.songTime) this.songTime = 1
       let player = this.$refs.player
@@ -135,6 +147,7 @@ export default {
             self.play = false
             clearInterval(self.timer)
             self.timer = null
+            self.playNextSong()
           }
         }, 1000)
       } else {
@@ -238,6 +251,12 @@ export default {
   background-color: #3F51B5;
   height: 100%;
   border-radius: 2px;
+}
+.like-icon {
+  color: rgba(237, 18, 91, .8) !important;
+}
+.like-icon:hover {
+  color: rgba(237, 18, 91, 1) !important;
 }
 @keyframes bounce-in {
   0% {

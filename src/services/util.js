@@ -22,6 +22,15 @@ class Util {
       }
     }
   }
+  setAttrToItem (Vue, from, item, attr) {
+    if (!(from instanceof Array)) return
+    for (let i = 0; i < from.length; i++) {
+      if (from[i].hash === item.hash) {
+        item[attr] = from[i][attr]
+        break
+      }
+    }
+  }
 }
 
 let exportInstance = new Util()

@@ -1,19 +1,23 @@
 <template lang="jade">
   #app
-    //- side-nav
     router-view
+    md-dialog-alert(md-content="未知错误，欢迎到https://github.com/HUANGChaoLi/Vue-Music提Issue，错误信息在控制台下", :md-ok-text="'ok'", ref="alertUnknow")
 </template>
 
 <script>
-// import sideNav from './components/sideNav'
 import Vue from 'Vue'
 
 export default {
-  name: 'app'
+  name: 'app',
+  mounted () {
+    // global error handler
+    Vue.config.errorHandler = function (err, vm) {
+      console.log(err)
+    }
+  }
 }
 
 // global event sender
-
 if (window) window.eventManager = new Vue({})
 
 </script>

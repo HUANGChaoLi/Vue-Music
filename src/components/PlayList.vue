@@ -46,8 +46,8 @@ export default {
       if (window) window.eventManager.$emit('Global.playSong', this.songs[index])
     },
     deleteSong (index) {
-      console.log(index)
-      this.songs = storage.removePlaySong(this.songs[index])
+      storage.removePlaySong(this.songs[index])
+      this.songs.splice(index, 1)
     }
   },
   components: {
