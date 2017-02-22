@@ -18,15 +18,14 @@
       .play-process(:style="{width: processRatio + '%'}")
     md-dialog-alert(:md-content="'查询失败，请检查网络状况'", :md-ok-text="'ok'", ref="alert")
     md-sidenav.md-left(ref="searchSidenav")
-      md-toolbar
+      md-toolbar.search-bar
         md-button.md-icon-button(@click.native="search")
           md-icon search
         md-input-container.search-input(md-inline)
           label Search Song
           md-input(v-model="keyword")
-      md-progress(md-indeterminate, v-if="searchNow")
-      sideList(:items="songs", :changeLike="updateLike", :changePlay="updatePlay")
-
+      md-progress.search-process(md-indeterminate, v-if="searchNow")
+      sideList.search-list(:items="songs", :changeLike="updateLike", :changePlay="updatePlay")
 </template>
 
 <script>
@@ -37,7 +36,6 @@ import timeFilter from '../filters/Time.js'
 import Resource from '../services/resource.js'
 import storage from '../services/storage.js'
 import util from '../services/util.js'
-// http://m.kugou.com/app/i/getSongInfo.php?hash=7e66e95f4583c6fc21eb92a79b428990&cmd=playInfo
 
 export default {
   name: 'Main',
@@ -50,6 +48,17 @@ export default {
       play: false,
       currentTime: 0,
       timer: null
+    }
+  },
+  mounted () {
+    if (window) {
+      let self = this
+      window.eventManager.$on('Favorite.changeLike', function () {
+        util.updateAttrFromTo(Vue, storage.getFavoriteSongs(), self.songs, 'like', false)
+      })
+      window.eventManager.$on('Global.playSong', function (newSong) {
+        console.log('TODO:playSong')
+      })
     }
   },
   methods: {
@@ -65,7 +74,6 @@ export default {
       router.push({name: state})
     },
     openSearchSidenav () {
-      util.updateAttrFromTo(Vue, storage.getFavoriteSongs(), this.songs, 'like', false)
       this.$refs.searchSidenav.toggle()
     },
     search () {
@@ -84,7 +92,7 @@ export default {
       Vue.set(this.songs, index, this.songs[index])
       if (this.songs[index].like) storage.addFavoriteSong(this.songs[index])
       else storage.removeFavoriteSong(this.songs[index])
-      if (window) window.eventManager.$emit('changeLike', 1)
+      if (window) window.eventManager.$emit('Search.changeLike')
     },
     updatePlay (index) {
       console.log(index)
@@ -122,7 +130,6 @@ export default {
           setTimeout(self.playOrPause, 200)
         }
       })
-      // console.log(this.$refs.player.currentTime)
     }
   },
   components: {
@@ -146,8 +153,23 @@ export default {
   background-color: white;
   z-index: 2;
 }
-.md-toolbar {
+.search-bar {
   height: 64px;
+  position: fixed;
+  z-index: 5;
+  top: 0px;
+  width: 100%;
+}
+.search-process {
+  position: fixed;
+  top: 64px;
+  z-index: 10;
+}
+.search-list {
+  position: fixed;
+  top: 64px;
+  bottom: 0px;
+  overflow: auto;
 }
 .content {
   position: absolute;

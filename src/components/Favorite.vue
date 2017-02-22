@@ -10,26 +10,20 @@
 </template>
 
 <script>
-import timeFilter from '../filters/Time.js'
 import storage from '../services/storage.js'
 import songList from './songList'
 
-let headers = ['歌曲', '歌手', '专辑', '时长']
-
 export default {
   name: 'Favorite',
-  props: ['changeLike'],
   data () {
     return {
-      headers,
       songs: storage.getFavoriteSongs()
     }
   },
   mounted () {
-    this.songs = storage.getFavoriteSongs()
-    let self = this
     if (window) {
-      window.eventManager.$on('changeLike', function () {
+      let self = this
+      window.eventManager.$on('Search.changeLike', function () {
         self.songs = storage.getFavoriteSongs()
       })
     }
@@ -37,6 +31,7 @@ export default {
   methods: {
     cancelFavorite (index) {
       this.songs = storage.removeFavoriteSong(this.songs[index])
+      if (window) window.eventManager.$emit('Favorite.changeLike')
     },
     playMusic (index) {
       console.log(index)
@@ -44,9 +39,6 @@ export default {
   },
   components: {
     songList
-  },
-  filters: {
-    timeFilter
   }
 }
 </script>
