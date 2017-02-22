@@ -10,6 +10,17 @@ class Util {
       else if (to[i]) to[i][attr] = defVal
       Vue.set(to, i, to[i])
     }
+    return to
+  }
+  updateAttrByHash (Vue, hash, to, attr, val) {
+    if (!(to instanceof Array)) return
+    for (let i = 0; i < to.length; i++) {
+      if (to[i].hash === hash) {
+        to[i][attr] = val
+        Vue.set(to, i, to[i])
+        return
+      }
+    }
   }
 }
 

@@ -2,12 +2,12 @@
   div
     md-bottom-bar.nav-bar
       md-bottom-bar-item(md-icon="music_note", @click.native="go('Play')", md-active) Music
-      md-bottom-bar-item(md-icon="queue_music") PlayList
+      md-bottom-bar-item(md-icon="queue_music", @click.native="go('PlayList')") PlayList
       md-bottom-bar-item(md-icon="favorite", @click.native="go('Favorite')") Favorite
       md-bottom-bar-item(md-icon="search", @click.native="openSearchSidenav") Search
     transition(name="bounce", mode="out-in")
       router-view.content
-    audio#player(ref="player", src="http://api.dagoogle.cn/music/demo_files/2015102514171913388512.mp3")
+    audio#player(ref="player", :src="playingSong.src")
     md-bottom-bar.music-control-container
       md-bottom-bar-item(md-icon="first_page", @click.native="show") 上一首
       md-bottom-bar-item(:md-icon="play ? 'pause' : 'play_arrow'", @click.native="playOrPause") {{play ? '暂停' : '播放'}}
@@ -47,17 +47,30 @@ export default {
       songTime: 0,
       play: false,
       currentTime: 0,
-      timer: null
+      timer: null,
+      playingSong: {}
     }
   },
   mounted () {
     if (window) {
       let self = this
-      window.eventManager.$on('Favorite.changeLike', function () {
-        util.updateAttrFromTo(Vue, storage.getFavoriteSongs(), self.songs, 'like', false)
+      window.eventManager.$on('Search.changeLike', function (song) {
+        util.updateAttrByHash(Vue, song.hash, self.songs, 'like', song.like)
       })
+      // 全局播放接口
       window.eventManager.$on('Global.playSong', function (newSong) {
-        console.log('TODO:playSong')
+        if (self.play && newSong.hash === self.playingSong.hash) return
+        if (self.play) self.playOrPause()
+        Resource.searchUrlByHash(self.$http, newSong.hash, function (err, url) {
+          if (err) {
+            self.$refs.alert.open()
+          } else {
+            self.playingSong = newSong
+            self.playingSong.src = url
+            self.playReset()
+            setTimeout(self.playOrPause, 200)
+          }
+        })
       })
     }
   },
@@ -92,10 +105,14 @@ export default {
       Vue.set(this.songs, index, this.songs[index])
       if (this.songs[index].like) storage.addFavoriteSong(this.songs[index])
       else storage.removeFavoriteSong(this.songs[index])
-      if (window) window.eventManager.$emit('Search.changeLike')
+      if (window) {
+        window.eventManager.$emit('Favorite.changeLike')
+        window.eventManager.$emit('PlayList.changeLike')
+      }
     },
     updatePlay (index) {
-      console.log(index)
+      storage.addPlaySong(this.songs[index])
+      if (window) window.eventManager.$emit('Global.playSong', this.songs[index])
     },
     playOrPause () {
       this.songTime = this.$refs.player.duration

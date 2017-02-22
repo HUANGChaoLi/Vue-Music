@@ -23,18 +23,19 @@ export default {
   mounted () {
     if (window) {
       let self = this
-      window.eventManager.$on('Search.changeLike', function () {
+      window.eventManager.$on('Favorite.changeLike', function () {
         self.songs = storage.getFavoriteSongs()
       })
     }
   },
   methods: {
     cancelFavorite (index) {
+      if (window) window.eventManager.$emit('Search.changeLike', {hash: this.songs[index].hash, like: false})
       this.songs = storage.removeFavoriteSong(this.songs[index])
-      if (window) window.eventManager.$emit('Favorite.changeLike')
     },
     playMusic (index) {
-      console.log(index)
+      storage.addPlaySong(this.songs[index])
+      if (window) window.eventManager.$emit('Global.playSong', this.songs[index])
     }
   },
   components: {
@@ -44,15 +45,6 @@ export default {
 </script>
 
 <style scoped>
-.songname {
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
-}
-
-.favorite-icon {
-  font-size: 22px;
-}
 
 .nothing-icon {
   height: 200px;

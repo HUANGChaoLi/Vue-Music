@@ -10,7 +10,7 @@
             .song-ctrl
               md-icon.ctrl-icon(@click.native='changePlay(index)') play_circle_outline
               md-icon.ctrl-icon(@click.native='changeLike(index)', :class='{like: item.like}') {{item.like ? 'favorite' : 'favorite_border'}}
-              md-icon.ctrl-icon(v-if="hasDelete") delete
+              md-icon.ctrl-icon(@click.native='deleteSong(index)', v-if="hasDelete") delete
             .other-container(@click='changePlay(index)')
               .song-filename {{item.filename}}
               .song-albumname {{item.album_name}}
@@ -20,7 +20,7 @@
 
 export default {
   name: 'songList',
-  props: ['items', 'changeLike', 'changePlay', 'delete', 'hasDelete'],
+  props: ['items', 'changeLike', 'changePlay', 'deleteSong', 'hasDelete'],
   data: function () {
     return {
       activeIndex: -1
@@ -98,15 +98,12 @@ ul li.active {
 }
 
 .song-ctrl {
-  /*position: absolute;*/
   display: inline-block;
   float: right;
   height: 100%;
   padding: 14px 0px;
   width: 100px;
-/*  right: 5px;
-  top: 14px;
-*/}
+}
 .song-ctrl .ctrl-icon {
   color: rgba(0, 0, 0, .4);
   display: inline-block;

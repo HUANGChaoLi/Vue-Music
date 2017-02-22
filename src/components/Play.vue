@@ -15,7 +15,6 @@
 
 <script>
 
-// import Vue from 'Vue'
 export default {
   name: 'Play'
 }

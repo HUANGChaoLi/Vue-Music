@@ -14,6 +14,7 @@ class Stroage {
     return songList
   }
   __addSongInList (listName, newSong) {
+    if (!newSong.hash) console.log('没有hash')
     let songList = this.__removeSongInList(listName, newSong)
     songList.unshift(newSong)
     localStorage.setItem(listName, JSON.stringify(songList))
