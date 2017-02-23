@@ -24,12 +24,13 @@ export default {
   },
   mounted () {
     let self = this
+    let defaultImgSrc = require('../assets/song.jpg')
     if (self.songImg) self.songImgSrc = self.songImg
     if (self.songTitle) self.songTitleText = self.songTitle
     if (window) {
       window.eventManager.$on('Play.songChange', function (newSong) {
-        if (!newSong || !newSong.imgSrc) self.songImgSrc = require('../assets/song.jpg')
-        else self.songImgSrc = newSong.imgSrc
+        if (!newSong || !newSong.headpic) self.songImgSrc = defaultImgSrc
+        else self.songImgSrc = newSong.headpic
         if (!newSong || !newSong.filename) self.songTitleText = '此歌曲无名字'
         else self.songTitleText = newSong.filename
       })

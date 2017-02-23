@@ -75,7 +75,7 @@ export default {
         if (self.play) self.playOrPause()
         Resource.searchUrlByHash(self.$http, newSong.hash, function (err, url) {
           if (err) {
-            self.$refs.alert.open()
+            self.$refs.alert404.open()
           } else {
             self.playingSong = newSong
             self.playingSong.src = url
@@ -146,23 +146,32 @@ export default {
     },
     playOrPause () {
       if (!this.playingSong.hash) return this.playNextSong()
-      this.songTime = this.$refs.player.duration
+      if (!this.$refs.player) return this.$refs.alertUnknow.open()
+      let player = this.$refs.player
+      let self = this
+
+      // 正确获取歌曲总时长
+      this.songTime = player.duration
       if (!this.songTime) this.songTime = 1
       if (this.songTime === 1) {
         // 说明需要重新等待获取
         let songTimer = setInterval(function () {
-          self.songTime = self.$refs.player.duration ? self.$refs.player.duration : 1
+          self.songTime = player.duration ? player.duration : 1
           if (!(self.songTime === 1)) clearInterval(songTimer)
         }, 100)
       }
-      let player = this.$refs.player
+
+      // 播放暂停主要代码
       this.play = !this.play
       if (player.paused) {
         player.play()
-        let self = this
+        // 正确设置播放条，每1s更新一次
         this.timer = setInterval(function () {
           self.currentTime += 1
-          if (self.$refs.player.ended) {
+          if (!self.$refs.player) {
+            self.$refs.alertUnknow.open()
+            self.playReset()
+          } else if (self.$refs.player.ended) {
             self.currentTime = 0
             self.play = false
             clearInterval(self.timer)
@@ -175,6 +184,7 @@ export default {
         player.pause()
       }
     },
+    // 实现播放上一条下一条主要代码
     __playThisSong (thisSong) {
       if (!thisSong) {
         this.$refs.alertPlay.open()

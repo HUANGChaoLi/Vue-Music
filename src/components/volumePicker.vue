@@ -1,6 +1,6 @@
 <template lang="jade">
   .volume-picker
-    //- md-ink-ripple
+    //- 阻止冒泡
     .container(@click.stop='')
       .process-container
       .picker(ref="picker", style="bottom: 0px")
@@ -14,32 +14,34 @@ export default {
   name: 'volumePicker',
   props: ['changeVolume', 'currentVolume'],
   mounted () {
+    /* 每次初始化当前声量 */
     let self = this
+    let maxHeight = 135
+    let minHeight = 20
+    let processExtraLength = 5
+    let processMaxLength = maxHeight - minHeight
     let picker = self.$refs.picker
     let line = self.$refs.process
-    picker.style.bottom = this.currentVolume * (135 - 20) + 20 + 'px'
-    line.style.height = this.currentVolume * (135 - 20) + 5 + 'px'
+    picker.style.bottom = this.currentVolume * processMaxLength + minHeight + 'px'
+    line.style.height = this.currentVolume * processMaxLength + processExtraLength + 'px'
+
+    /* 实现滑动条平滑滑动代码 */
     picker.onmousedown = function (e) {
       let oldY = e.clientY
       let bottom = parseInt(this.style.bottom)
       document.onmousemove = function (event) {
         let moveY = oldY - event.clientY
         let newY = moveY + bottom
-        if (newY > 135) newY = 135
-        if (newY < 20) newY = 20
+        if (newY > maxHeight) newY = maxHeight
+        if (newY < minHeight) newY = minHeight
         picker.style.bottom = newY + 'px'
-        line.style.height = newY - 15 + 'px'
-        self.changeVolume((newY - 20) / (135 - 20))
+        line.style.height = newY - minHeight + processExtraLength + 'px'
+        self.changeVolume((newY - minHeight) / processMaxLength)
       }
       document.onmouseup = function (e) {
         document.onmousemove = null
         document.onmouseup = null
       }
-    }
-  },
-  methods: {
-    show (e) {
-      console.log(e.clientX)
     }
   }
 }
@@ -74,7 +76,6 @@ export default {
   bottom: 40px;
   cursor: move;
 }
-
 .volume-picker {
   z-index: 10;
   background-color: white;
@@ -83,17 +84,5 @@ export default {
   border-radius: 4px 4px 4px 4px;
   box-sizing: border-box;
   box-shadow: 0px 0px 5px rgba(0, 0, 0, .5);
-}
-
-@keyframes rotating {
-  from {
-    transform: rotate(0deg);
-  }
-  to {
-    transform: rotate(360deg);
-  }
-}
-.rotating {
-  animation: rotating 2s linear infinite;
 }
 </style>

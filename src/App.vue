@@ -1,7 +1,7 @@
 <template lang="jade">
   #app
     router-view
-    md-dialog-alert(md-content="未知错误，欢迎到https://github.com/HUANGChaoLi/Vue-Music提Issue，错误信息在控制台下", :md-ok-text="'ok'", ref="alertUnknow")
+    md-dialog-alert(md-content="未知错误，欢迎到https://github.com/HUANGChaoLi/Vue-Music提Issue，错误信息在控制台下", :md-ok-text="'ok'", ref="unknow")
 </template>
 
 <script>
@@ -10,9 +10,11 @@ import Vue from 'Vue'
 export default {
   name: 'app',
   mounted () {
+    let self = this
     // global error handler
     Vue.config.errorHandler = function (err, vm) {
       console.log(err)
+      self.$refs.unknow.open()
     }
   }
 }

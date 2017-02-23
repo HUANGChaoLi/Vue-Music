@@ -11,7 +11,7 @@
               md-icon.ctrl-icon(@click.native='changePlay(index)') play_circle_outline
               md-icon.ctrl-icon(@click.native='changeLike(index)', :class='{like: item.like}') {{item.like ? 'favorite' : 'favorite_border'}}
               md-icon.ctrl-icon(@click.native='deleteSong(index)', v-if="hasDelete") delete
-            .other-container(@click='changePlay(index)')
+            .name-container(@click='changePlay(index)')
               .song-filename {{item.filename}}
               .song-albumname {{item.album_name}}
 </template>
@@ -70,7 +70,7 @@ ul li.active {
   width: 50px;
   float: left;
 }
-.other-container {
+.name-container {
   margin-left: 55px;
   margin-right: 100px;
   height: 100%;
