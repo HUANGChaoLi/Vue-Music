@@ -1,12 +1,12 @@
 <template lang="jade">
   div
     md-bottom-bar.nav-bar
-      md-bottom-bar-item(md-icon="music_note", @click.native="go('Play')", md-active) Music
+      md-bottom-bar-item(md-icon="music_note", @click.native="go('Music')") Music
       md-bottom-bar-item(md-icon="queue_music", @click.native="go('PlayList')") PlayList
       md-bottom-bar-item(md-icon="favorite", @click.native="go('Favorite')") Favorite
       md-bottom-bar-item(md-icon="search", @click.native="openSearchSidenav") Search
     transition(name="bounce", mode="out-in")
-      router-view.content
+      router-view.content(:songImg="playingSong.headpic", :songTitle="playingSong.filename")
     audio#player(ref="player", :src="playingSong.src")
     md-bottom-bar.music-control-container
       md-bottom-bar-item(md-icon="first_page", @click.native="playPrevSong") 上一首
@@ -71,6 +71,7 @@ export default {
         if (self.play && newSong.hash === self.playingSong.hash) return
         util.setAttrToItem(Vue, storage.getFavoriteSongs(), newSong, 'like')
         window.eventManager.$emit('PlayList.playSongADD', newSong)
+        window.eventManager.$emit('Play.songChange', newSong)
         if (self.play) self.playOrPause()
         Resource.searchUrlByHash(self.$http, newSong.hash, function (err, url) {
           if (err) {

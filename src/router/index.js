@@ -1,9 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
 import Main from 'views/Main'
-import Favorite from 'views/Favorite'
-import Play from 'views/Play'
+import Music from 'views/Music'
 import PlayList from 'views/PlayList'
+import Favorite from 'views/Favorite'
 
 Vue.use(Router)
 
@@ -12,15 +12,11 @@ export default new Router({
   routes: [
     {
       path: '/',
-      redirect: '/Music'
-    },
-    {
-      path: '/Music',
       component: Main,
       children: [
         {
           path: '/',
-          redirect: 'Play'
+          redirect: 'Music'
         },
         {
           path: 'Favorite',
@@ -28,9 +24,9 @@ export default new Router({
           component: Favorite
         },
         {
-          path: 'Play',
-          name: 'Play',
-          component: Play
+          path: 'Music',
+          name: 'Music',
+          component: Music
         },
         {
           path: 'PlayList',
@@ -38,6 +34,10 @@ export default new Router({
           component: PlayList
         }
       ]
+    },
+    {
+      path: '/*',
+      redirect: '/'
     }
   ]
 })
