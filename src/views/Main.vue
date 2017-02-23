@@ -5,7 +5,7 @@
       md-bottom-bar-item(md-icon="queue_music", @click.native="go('PlayList')") PlayList
       md-bottom-bar-item(md-icon="favorite", @click.native="go('Favorite')") Favorite
       md-bottom-bar-item(md-icon="search", @click.native="openSearchSidenav") Search
-    transition(name="bounce", mode="out-in")
+    transition(name="fade", mode="out-in")
       router-view.content(:songImg="playingSong.headpic", :songTitle="playingSong.filename")
     audio#player(ref="player", :src="playingSong.src")
     md-bottom-bar.music-control-container
@@ -14,7 +14,7 @@
       md-bottom-bar-item(md-icon="last_page", @click.native="playNextSong") 下一首
       md-bottom-bar-item.like-icon(:md-icon="playingSong.like ? 'favorite' : 'favorite_border'", @click.native="markFavorite") 喜欢
       md-bottom-bar-item(@click.native="showVolumePicker($event)", :md-icon="volume ? 'volume_up' : 'volume_off'") 音量
-        transition(name="bounce", mode="out-in")
+        transition(name="fade", mode="out-in")
           volumePicker#volume-picker(v-if="showPicker", :changeVolume="changeVolume", :currentVolume="volume")
     .play-process-container
       .play-process(:style="{width: processRatio + '%'}")
@@ -242,12 +242,6 @@ export default {
   bottom: 56px;
   overflow: auto;
 }
-.bounce-enter-active {
-  animation: bounce-in .25s;
-}
-.bounce-leave-active {
-  animation: bounce-out .25s;
-}
 .search-input {
   width: 80%;
 }
@@ -281,7 +275,13 @@ export default {
 .like-icon:hover {
   color: rgba(237, 18, 91, 1) !important;
 }
-@keyframes bounce-in {
+.fade-enter-active {
+  animation: fade-in .25s;
+}
+.fade-leave-active {
+  animation: fade-out .25s;
+}
+@keyframes fade-in {
   0% {
     opacity: 0;
   }
@@ -289,7 +289,7 @@ export default {
     opacity: 1;
   }
 }
-@keyframes bounce-out {
+@keyframes fade-out {
   0% {
     opacity: 1;
   }
