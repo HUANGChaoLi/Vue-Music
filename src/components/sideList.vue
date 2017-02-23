@@ -5,7 +5,7 @@
       li(v-on:click="active(index)", v-bind:class="{ active: index == activeIndex }")
         md-layout(md-gutter)
           md-layout(md-flex="20")
-            img.song-img(:src="item.headpic")
+            img.song-img(:src="item.headpic ? item.headpic : defaultImg")
           md-layout
             .song-filename {{item.filename}}
             .song-albumname {{item.album_name}}
@@ -21,7 +21,7 @@ import timeFilter from '../filters/Time.js'
 
 export default {
   name: 'sideList',
-  props: ['items', 'changeLike', 'changePlay'],
+  props: ['items', 'changeLike', 'changePlay', 'defaultImg'],
   data: function () {
     return {
       activeIndex: 0

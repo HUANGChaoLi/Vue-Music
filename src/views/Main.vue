@@ -29,7 +29,7 @@
           label Search Song
           md-input(v-model="keyword")
       md-progress.search-process(md-indeterminate, v-if="searchNow")
-      sideList.search-list(:items="songs", :changeLike="updateLike", :changePlay="updatePlay")
+      sideList.search-list(:items="songs", :changeLike="updateLike", :changePlay="updatePlay", :defaultImg="defaultImg")
 </template>
 
 <script>
@@ -47,6 +47,7 @@ export default {
   data () {
     return {
       songs: [], // 搜索结果歌曲
+      defaultImg: require('../assets/default.png'),
       keyword: '',
       searchNow: false,
       songTime: 0,

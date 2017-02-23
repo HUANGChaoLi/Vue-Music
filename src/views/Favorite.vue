@@ -1,6 +1,6 @@
 <template lang="jade">
   #Favorite
-    songList(:items="songs", v-if="songs.length > 0", :changePlay="playMusic", :changeLike="cancelFavorite")
+    songList(:items="songs", v-if="songs.length > 0", :changePlay="playMusic", :changeLike="cancelFavorite", :defaultImg="defaultImg")
     div(v-else)
       .nothing-icon
         md-icon.nothing-icons assignment
@@ -17,7 +17,8 @@ export default {
   name: 'Favorite',
   data () {
     return {
-      songs: storage.getFavoriteSongs()
+      songs: storage.getFavoriteSongs(),
+      defaultImg: require('../assets/default.png')
     }
   },
   mounted () {

@@ -1,6 +1,6 @@
-# chao-music
+# Vue-Music
 
-> a music app
+> a music app built by Vue
 
 ## Build Setup
 

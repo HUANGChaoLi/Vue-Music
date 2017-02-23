@@ -1,6 +1,6 @@
 <template lang="jade">
   #PlayList
-    songList(:items="songs", v-if="songs.length > 0", :changePlay="playMusic", :changeLike="updateLike", hasDelete="true", :deleteSong="deleteSong")
+    songList(:items="songs", v-if="songs.length > 0", :changePlay="playMusic", :changeLike="updateLike", hasDelete="true", :deleteSong="deleteSong", :defaultImg="defaultImg")
     div(v-else)
       .nothing-icon
         md-icon.nothing-icons assignment
@@ -19,7 +19,8 @@ export default {
   name: 'PlayList',
   data () {
     return {
-      songs: util.updateAttrFromTo(Vue, storage.getFavoriteSongs(), storage.getPlaySongs(), 'like', false)
+      songs: util.updateAttrFromTo(Vue, storage.getFavoriteSongs(), storage.getPlaySongs(), 'like', false),
+      defaultImg: require('../assets/default.png')
     }
   },
   mounted () {

@@ -6,7 +6,7 @@
         li(v-on:click="active(index)", v-bind:class="{ active: index == activeIndex }")
           .list-container
             .img-container(@click='changePlay(index)')
-              img.song-img(:src="item.headpic")
+              img.song-img(:src="item.headpic ? item.headpic : defaultImg")
             .song-ctrl
               md-icon.ctrl-icon(@click.native='changePlay(index)') play_circle_outline
               md-icon.ctrl-icon(@click.native='changeLike(index)', :class='{like: item.like}') {{item.like ? 'favorite' : 'favorite_border'}}
@@ -20,7 +20,7 @@
 
 export default {
   name: 'songList',
-  props: ['items', 'changeLike', 'changePlay', 'deleteSong', 'hasDelete'],
+  props: ['items', 'changeLike', 'changePlay', 'deleteSong', 'hasDelete', 'defaultImg'],
   data: function () {
     return {
       activeIndex: -1
