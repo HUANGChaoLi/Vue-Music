@@ -11,7 +11,7 @@
 
 <script>
 import storage from '../services/storage.js'
-import songList from './songList'
+import songList from '../components/songList'
 
 export default {
   name: 'Favorite',

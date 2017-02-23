@@ -1,9 +1,9 @@
 import Vue from 'vue'
 import Router from 'vue-router'
-import Main from 'components/Main'
-import Favorite from 'components/Favorite'
-import Play from 'components/Play'
-import PlayList from 'components/PlayList'
+import Main from 'views/Main'
+import Favorite from 'views/Favorite'
+import Play from 'views/Play'
+import PlayList from 'views/PlayList'
 
 Vue.use(Router)
 

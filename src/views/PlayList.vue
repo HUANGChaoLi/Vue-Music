@@ -11,9 +11,9 @@
 
 <script>
 import Vue from 'Vue'
+import songList from '../components/songList'
 import storage from '../services/storage.js'
 import util from '../services/util.js'
-import songList from './songList'
 
 export default {
   name: 'PlayList',

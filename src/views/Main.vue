@@ -34,8 +34,8 @@
 
 <script>
 import Vue from 'Vue'
-import sideList from './sideList'
-import volumePicker from './volumePicker'
+import sideList from '../components/sideList'
+import volumePicker from '../components/volumePicker'
 import router from '../router/index.js'
 import Resource from '../services/resource.js'
 import storage from '../services/storage.js'
@@ -78,7 +78,7 @@ export default {
             self.playingSong = newSong
             self.playingSong.src = url
             self.playReset()
-            setTimeout(self.playOrPause, 200)
+            setTimeout(self.playOrPause, 500)
           }
         })
       })
@@ -146,6 +146,13 @@ export default {
       if (!this.playingSong.hash) return this.playNextSong()
       this.songTime = this.$refs.player.duration
       if (!this.songTime) this.songTime = 1
+      if (this.songTime === 1) {
+        // 说明需要重新等待获取
+        let songTimer = setInterval(function () {
+          self.songTime = self.$refs.player.duration ? self.$refs.player.duration : 1
+          if (!(self.songTime === 1)) clearInterval(songTimer)
+        }, 100)
+      }
       let player = this.$refs.player
       this.play = !this.play
       if (player.paused) {
