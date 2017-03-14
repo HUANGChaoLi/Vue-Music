@@ -16,3 +16,10 @@ npm run dev
 npm run serve
 
 ```
+
+
+## Plan
+
+1.过段时间切换QQ音乐API
+
+2.采用全新UI方案
